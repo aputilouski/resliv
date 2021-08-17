@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>4-5 storage</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+
+
+      window.onmessage = (e) => {
+        const payload = JSON.parse(e.data);
+        const returnPayload = {};
+        switch(payload.method) {
+          case 'set':
+            localStorage.setItem(payload.key, JSON.stringify(payload.data));
+            returnPayload.message = 'written';
+            break;
+          case 'get':
+            const parent = window.parent;
+            const data = JSON.parse(localStorage.getItem(payload.key));
+            returnPayload.method = 'storage#get';
+            returnPayload.data = data;
+            returnPayload.message = 'read';
+            break;
+          case 'remove':
+            localStorage.removeItem(payload.key);
+            returnPayload.message = 'removed';
+            break;
+          default:
+            returnPayload.message = `Unknown method ${payload.method}`;
+        }
+
+        const callbackExample = (box, message) => {box.innerHTML = message;}
+        returnPayload.callback = callbackExample.toString();
+        
+        parent.postMessage(JSON.stringify(returnPayload), '*');
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,161 @@
+<html>
+  <head>
+    <title>2</title>
+  </head>
+  <body>
+    
+    <div>
+      <p>Size:</p>
+
+      <div>
+        <input type="radio" id="sizeS" name="size" value="S">
+        <label for="sizeS">S</label>
+      </div>
+
+      <div>
+        <input type="radio" id="sizeM" name="size" value="M">
+        <label for="sizeM">M</label>
+      </div>
+
+      <div>
+        <input type="radio" id="sizeL" name="size" value="L">
+        <label for="sizeL">L</label>
+      </div>
+
+
+      <hr>
+      <p>Color:</p>
+
+      <div>
+        <input type="checkbox" id="color1" name="color1" value="1">
+        <label for="color1">Color1</label>
+      </div>
+
+      <div>
+        <input type="checkbox" id="color2" name="color2" value="2">
+        <label for="color2">Color2</label>
+      </div>
+
+      <div>
+        <input type="checkbox" id="color3" name="color3" value="3">
+        <label for="color3">Color3</label>
+      </div>
+      
+      <div>
+        <input type="checkbox" id="color4" name="color4" value="4">
+        <label for="color4">Color4</label>
+      </div>
+      
+      <div>
+        <input type="checkbox" id="color5" name="color5" value="5">
+        <label for="color5">Color5</label>
+      </div>
+
+
+      <hr>
+      <p>manufacturer:</p>
+      <select multiple name="manufacturer"> 
+        <option value="aaa">aaa</option>
+        <option value="b&c">b&c</option>
+        <option value="ddd">ddd</option>
+        <option value="eee">eee</option>  
+      </select>
+
+
+      <hr>
+      <div>
+        <input type="checkbox" id="sale" name="sale" value="1">
+        <label for="sale">Sale</label>
+      </div>
+
+
+    </div>
+
+
+    <script type="text/javascript">
+      const params = new URLSearchParams(document.location.search.substring(1));
+
+      function showULR(argument) {
+        console.log(params.toString());
+      }
+
+
+      // URL Search Param Names
+      const SIZE_NAME = "size";
+      const COLOR_NAME = "color";
+      const MANUFACTURER_NAME = "manufacturer";
+
+
+      // URL Search Param Values
+      const SIZE_VALUE = params.get(SIZE_NAME);
+      const COLOR_VALUE = [...new Set(params.getAll(COLOR_NAME))];
+      const MANUFACTURER_VALUE = [...new Set(params.getAll(MANUFACTURER_NAME))];
+
+
+      // this code parses url, validates and fills buttons with url parameters
+      const regForSize = new RegExp('^[S|M|L]$');
+      if (regForSize.test(SIZE_VALUE)) {
+        document.querySelector(`input[name=size][value=${SIZE_VALUE}]`).checked = true;
+      }
+
+      const regForColors = new RegExp('^[1-5]$');
+      COLOR_VALUE.forEach((colorNum => {
+        if (regForColors.test(colorNum)) {
+          const colorNode = document.querySelector(`input[name=color${colorNum}]`);
+          colorNode.checked = true;
+        }
+      }));
+
+      const manufacturerSelect = document.querySelector("select[name=manufacturer]");
+      const manufacturerAvailableValues = [];
+      for (let option of manufacturerSelect.options) {
+        manufacturerAvailableValues.push(option.value);
+      }
+
+      MANUFACTURER_VALUE.forEach(manufacturer => {
+        if (manufacturerAvailableValues.includes(manufacturer)) {
+          document.querySelector(`select[name=manufacturer] option[value=${manufacturer}]`).selected = true;
+        }
+      })
+
+
+      // code below adds event handlers to buttons
+      const sizeRadioButtons = document.querySelectorAll("input[name=size]");
+      sizeRadioButtons.forEach(radio => {
+        radio.addEventListener("change", function() {
+          params.delete(this.name);
+          params.append(this.name, this.value);
+          showULR();
+        });
+      });
+
+      const colorCheckboxes = document.querySelectorAll("input[name^=color]");
+      const checkedColors = new Set(COLOR_VALUE);
+      colorCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", function() {
+          this.checked ? checkedColors.add(this.value) : checkedColors.delete(this.value);
+          params.delete('color');
+          [...checkedColors].forEach(color => {
+            params.append('color', color);
+          })
+          showULR();
+        });
+      });
+
+
+      manufacturerSelect.addEventListener('change', function() {
+        params.delete('manufacturer');
+        for (let option of manufacturerSelect.selectedOptions) {
+          params.append('manufacturer', option.value);
+        }
+        showULR();
+      });
+
+
+      document.querySelector("input[name=sale]").addEventListener('change', function() {
+        this.checked ? params.append(this.name, this.value) : params.delete(this.name);
+      });
+      
+    </script>
+  </body>
+</html>

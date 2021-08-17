@@ -1,23 +1,35 @@
-import logo from './logo.svg';
+import {useState} from "react";
+import EmployeesPage from "./components/EmployeesPage.jsx";
+import MainPage from "./components/MainPage.jsx";
 import './App.css';
 
 function App() {
+
+  const MAIN_MENU = 'main';
+  const EMPLOYEES_MENU = 'employees';
+
+  const currentPath = window.location.pathname.substring(1);
+
+  const [menu, setMenu] = useState([MAIN_MENU, EMPLOYEES_MENU].includes(currentPath) ? currentPath : MAIN_MENU);
+  const menuHandler = newMenu => event => {
+    event.preventDefault();
+    if (newMenu === menu) {return;}
+    setMenu(newMenu);
+    window.history.pushState(null, null, `/${newMenu}`);
+  }  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div>
+      <header>
+        <a href="/main" onClick={menuHandler(MAIN_MENU)}>Главная</a>
+        <a href="/employees" onClick={menuHandler(EMPLOYEES_MENU)}>Сотрудники</a>
       </header>
+      {
+        menu === MAIN_MENU && <MainPage/>
+      }
+      {
+        menu === EMPLOYEES_MENU && <EmployeesPage/>
+      }
     </div>
   );
 }

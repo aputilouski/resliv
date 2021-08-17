@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>1</title>
+  </head>
+  <body>
+    <style>
+      .red {
+        color: red;
+      }
+    </style>
+    <input type="text" name="name" id="name_input" value="Xxxx">
+    <script type="text/javascript">
+      function inputInitialValueChecker(input) {
+        if (!document.body.contains(input) || !(input instanceof HTMLInputElement)) {return;}
+        let initialInputValue = input.value;
+        input.addEventListener("input", function(event) {
+          event.target.value !== initialInputValue ? input.classList.add("red") : input.classList.remove("red");
+        });  
+      }
+
+      // inputInitialValueChecker(document.getElementById("name_input"));
+      inputInitialValueChecker(document.querySelector("input"));
+    </script>
+  </body>
+</html>

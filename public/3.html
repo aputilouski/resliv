@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>3</title>
+  </head>
+  <body>
+    <p>check console</p>
+    <script type="text/javascript">
+
+      function getMyTimeZone() {
+        return fetch("http://worldtimeapi.org/api/ip").then(response => response.json());
+      }
+
+      function getNewYorkTimeZone() {
+        return fetch("http://worldtimeapi.org/api/timezone/America/New_York").then(response => response.json());
+      }
+
+
+      Promise.all([getMyTimeZone(), getNewYorkTimeZone()]).then(values => {
+
+        const [ myTimeZone, NewYorkTimeZone ] = values;
+
+        console.log(myTimeZone);
+        console.log(NewYorkTimeZone);
+
+      })
+
+    </script>
+  </body>
+</html>

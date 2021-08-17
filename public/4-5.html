@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <title>4-5</title>
+  </head>
+  <body>
+      
+    <iframe id="iframe" src="http://localhost:3032/"></iframe>
+
+    <div>
+      <button id="getBtn">Get</button>
+      <button id="setBtn">Set</button>
+      <button id="removeBtn">Remove</button>
+    </div>
+    <div id="message"></div>
+
+    <script type="text/javascript">
+
+      const CrossOriginLocalStorage = function(iframe, messageBox) {
+
+        this.getData = (key) => {
+          const messageData = {key, method: 'get'}
+          this.postMessage(messageData);
+        }
+
+        this.setData = (key, data) => {
+          const messageData = {key, data, method: 'set'}
+          this.postMessage(messageData);
+        }
+
+        this.removeData = (key) => {
+          const messageData = {key, method: 'remove'}
+          this.postMessage(messageData);
+        }
+
+        this.postMessage = (messageData) => {
+          iframe.contentWindow.postMessage(JSON.stringify(messageData), '*');
+        }
+
+        window.onmessage = (event) => {
+          const payload = JSON.parse(event.data);
+
+          switch (payload.method) {
+            case 'storage#get':
+              console.log(payload.data);
+              break;
+            default:
+              console.log(payload.message);
+          }
+
+          const callback = eval("(" + payload.callback + ")");
+          callback(messageBox, payload.message);
+        };
+      };
+
+
+
+      window.onload = function () {
+
+        const iframe = document.getElementById('iframe');
+        const messageBox = document.getElementById('message');
+        const cross = new CrossOriginLocalStorage(iframe, messageBox);
+
+        document.getElementById('getBtn').onclick = () => {
+          cross.getData('option');
+        };
+
+        document.getElementById('setBtn').onclick = () => {
+          cross.setData('option', 'example');
+        };
+
+        document.getElementById('removeBtn').onclick = () => {
+          cross.removeData('option');
+        };
+
+      };
+    </script>
+
+  </body>
+</html>
